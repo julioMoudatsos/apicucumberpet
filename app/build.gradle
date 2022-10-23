@@ -21,8 +21,6 @@ dependencies {
     implementation project(':utilities')
 }
 
-
-
 application {
     // Define the main class for the application.
     mainClass = 'testandoapis.app.App'
