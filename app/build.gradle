@@ -28,6 +28,14 @@ application {
     mainClass = 'testandoapis.app.App'
 }
 
-task sanidade(type:Test){
-    systemProperty "cucumber.filter.tags","@sanidade2"
+task apiTest(type: Test) {}
+
+task sanityTest(type: Test) {
+    environment "CUCUMBER_FILTER_TAGS", "@sanidade"
 }
+
+task regressionTest(type: Test) {
+    systemProperty "cucumber.filter.tags", "not @wip and not @quarantine and not @sanity"
+}
+
+dockerCompose.isRequiredBy(apiTest)
