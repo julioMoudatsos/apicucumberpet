@@ -41,3 +41,51 @@ jobs:
           root: .
           paths:
             - gradle
+  sanityTests:
+    <<: *containerSetup
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "app/build.gradle" }}
+      - run:
+          name: Sanity Cucumber Tests
+          command: |
+            gradle sanityTest
+          when: always
+      - store_test_results:
+          path: app/build/test-results
+      - store_artifacts:
+          path: app/build/reports
+  regressionTests:
+    <<: *containerSetup
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "app/build.gradle" }}
+      - run:
+          name: Regression Cucumber Tests
+          command: |
+            gradle regressionTest
+          when: always
+      - store_test_results:
+          path: app/build/test-results
+      - store_artifacts:
+          path: app/build/reports
+
+workflows:
+  version: 2
+  qaops-bdd:
+    jobs:
+      - build
+      - sanityTests:
+          requires:
+            - build
+      - regressionTests:
+          requires:
+            - sanityTests
